@@ -1,0 +1,55 @@
+version: '3.8'
+
+services:
+  mongo:
+    image: mongo:latest
+    container_name: mongo
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo-data:/data/db
+
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: rabbitmq
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+
+  auth_service:
+    build: ./auth_service
+    container_name: auth_service
+    ports:
+      - "5001:5001"
+    environment:
+      - MONGO_URI=mongodb://mongo:27017/authdb
+      - JWT_SECRET_KEY=7c1e8e5d2f8f4b7e8f1e2d3c4b5a6f7d8e9c0a1b2c3d4e5f6a7b8c9d0e1f2a3
+    depends_on:
+      - mongo
+
+  product_service:
+    build: ./product_service
+    container_name: product_service
+    ports:
+      - "5002:5002"
+    environment:
+      - MONGO_URI=mongodb://mongo:27017/productdb
+      - JWT_SECRET_KEY=7c1e8e5d2f8f4b7e8f1e2d3c4b5a6f7d8e9c0a1b2c3d4e5f6a7b8c9d0e1f2a3
+    depends_on:
+      - mongo
+
+  order_service:
+    build: ./order_service
+    container_name: order_service
+    ports:
+      - "5003:5003"
+    environment:
+      - MONGO_URI=mongodb://mongo:27017/orderdb
+      - JWT_SECRET_KEY=7c1e8e5d2f8f4b7e8f1e2d3c4b5a6f7d8e9c0a1b2c3d4e5f6a7b8c9d0e1f2a3
+      - RABBITMQ_URL=amqp://guest:guest@rabbitmq:5672/
+    depends_on:
+      - mongo
+      - rabbitmq
+
+volumes:
+  mongo-data:
