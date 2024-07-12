@@ -1,10 +1,11 @@
 FROM python:3.9
 
-WORKDIR /app
+WORKDIR /product_service
 
 COPY requirements.txt requirements.txt
 RUN pip install -r requirements.txt
+RUN pip install pytest
 
 COPY . .
 
-CMD ["python", "app.py"]
+CMD ["pytest", "tests"]

@@ -1,15 +1,12 @@
 from flask_pymongo import PyMongo
-from flask_bcrypt import Bcrypt
-from flask_jwt_extended import JWTManager
+from werkzeug.security import generate_password_hash, check_password_hash
 
 def initialize_db(app):
     mongo = PyMongo(app)
-    bcrypt = Bcrypt(app)
-    jwt = JWTManager(app)
-    return mongo, bcrypt, jwt
+    return mongo
 
-def register_user(mongo, bcrypt, username, password):
-    hashed_password = bcrypt.generate_password_hash(password).decode('utf-8')
+def register_user(mongo, username, password):
+    hashed_password = generate_password_hash(password)
     user = {
         "username": username,
         "password": hashed_password
@@ -17,8 +14,8 @@ def register_user(mongo, bcrypt, username, password):
     mongo.db.users.insert_one(user)
     return user
 
-def authenticate_user(mongo, bcrypt, username, password):
+def authenticate_user(mongo, username, password):
     user = mongo.db.users.find_one({"username": username})
-    if user and bcrypt.check_password_hash(user['password'], password):
+    if user and check_password_hash(user['password'], password):
         return user
     return None

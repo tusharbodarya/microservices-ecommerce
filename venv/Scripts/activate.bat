@@ -8,7 +8,7 @@ if defined _OLD_CODEPAGE (
     "%SystemRoot%\System32\chcp.com" 65001 > nul
 )
 
-set VIRTUAL_ENV=T:\Cmp\microservices_ecommerce\venv
+set VIRTUAL_ENV=T:\Cmp\microservices_ecommerce\microservices-ecommerce\venv
 
 if not defined PROMPT set PROMPT=$P$G
 
